@@ -101,9 +101,8 @@ for epoch in range(30):
     max_acc = max(max_acc, acc)
     print ("Accuracy: %.4f (max: %.4f)" % (acc, max_acc))
 
-print ("Write predict into the file")
+print ("Write predict into", args.predict)
 print ("class_test:", class_test.shape)
-print (class_test)
 outputfile = open(args.predict, "w")
 for i in range(len(class_test)):
 	outputfile.write("{}\t{}\n".format(i, labelsMapping[class_test[i]]))

@@ -10,8 +10,10 @@ def get_arg():
 	parser.add_argument("--test", default="data/test.txt")
 	parser.add_argument("--train", default="data/train.txt")
 	parser.add_argument("--output", default="pkl/data.pkl.gz")
+	parser.add_argument("--bin", action="store_true")
 	parser.add_argument("--embeddingsPkl", default="pkl/embeddings.pkl.gz")
-	parser.add_argument("--embeddings", default="/tmp2/b05902005/GoogleNews-vectors-negative300.bin")
+	parser.add_argument("--embeddings_bin", default="/tmp2/b05902005/GoogleNews-vectors-negative300.bin")
+	parser.add_argument("--embeddings", default="/tmp2/b05902090/deps.words")
 	args = parser.parse_args()
 	return args
 
@@ -103,8 +105,7 @@ def main():
 	print ("Max sentence length:", maxSentenceLen)
 
 	print ("embeddings...")
-	embeddings = []
-	model = KeyedVectors.load_word2vec_format(args.embeddings, binary=True)  
+	embeddings = []  
 	
 	word2Idx["PADDING"] = 0
 	vector = np.zeros(300)
@@ -114,7 +115,14 @@ def main():
 	vector = np.random.uniform(-0.25, 0.25, 300)
 	embeddings.append(vector)
 
-	vocab_list = [(k, model.wv[k]) for k, v in model.wv.vocab.items()]
+	if args.bin:
+		model = KeyedVectors.load_word2vec_format(args.embeddings_bin, binary=True)
+		vocab_list = [(k, model.wv[k]) for k, v in model.wv.vocab.items()]
+	else:
+		vocab_list = []
+		for line in open(args.embeddings):
+			split = line.strip().split(" ")
+			vocab_list.append([split[0], split[1:]])
 
 	for i in range(len(vocab_list)):
 		word = vocab_list[i][0].lower()
