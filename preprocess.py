@@ -4,11 +4,13 @@ import numpy as np
 import argparse
 import nltk
 from gensim.models import KeyedVectors
+import nltk
+from nltk.corpus import treebank
 
 def get_arg():
 	parser = argparse.ArgumentParser(description="")
-	parser.add_argument("--test", default="data/test.txt")
-	parser.add_argument("--train", default="data/train.txt")
+	parser.add_argument("--test", default="../files/test.txt")
+	parser.add_argument("--train", default="../files/train.txt")
 	parser.add_argument("--output", default="pkl/data.pkl.gz")
 	parser.add_argument("--bin", action="store_true")
 	parser.add_argument("--embeddingsPkl", default="pkl/embeddings.pkl.gz")
@@ -38,12 +40,15 @@ for dis in range(minDistance,maxDistance+1):
 maxSentenceLen = [0,0]
 words = {}
 word2Idx = {}
+pos2Idx = {}
 
 def createMatices(file, maxSentenceLen):
 	labels_map = []
 	tokenIdsMatrix = []
 	positionMatrix1 = []
 	positionMatrix2 = []
+	Pos_tagging = []
+		
 	for line in open(file, "r"):
 		splits = line.strip().split('\t')
 		
@@ -52,6 +57,12 @@ def createMatices(file, maxSentenceLen):
 		pos2 = int(splits[2])
 		sentence = splits[3]
 		tokens = sentence.split()
+		pos_tagger = np.zeros(maxSentenceLen)
+		tag = nltk.pos_tag(tokens)
+		for i in range(len(tag)):
+			if tag[i][1] not in pos2Idx:
+				pos2Idx[ tag[i][1] ] = len(pos2Idx) + 1
+			pos_tagger[i] = pos2Idx[ tag[i][1] ]
 
 		tokenIds = np.zeros(maxSentenceLen)
 		positionValues1 = np.zeros(maxSentenceLen)
@@ -80,8 +91,9 @@ def createMatices(file, maxSentenceLen):
 		tokenIdsMatrix.append(tokenIds)
 		positionMatrix1.append(positionValues1)
 		positionMatrix2.append(positionValues2)
+		Pos_tagging.append(pos_tagger)
 
-	return np.array(labels_map, dtype='int32'), np.array(tokenIdsMatrix, dtype='int32'), np.array(positionMatrix1, dtype='int32'), np.array(positionMatrix2, dtype='int32')
+	return np.array(labels_map, dtype='int32'), np.array(tokenIdsMatrix, dtype='int32'), np.array(positionMatrix1, dtype='int32'), np.array(positionMatrix2, dtype='int32'), np.array(Pos_tagging, dtype='int32')
 
 def getWordIdx(token): 
 	if token in word2Idx:
@@ -151,3 +163,4 @@ def main():
 
 if __name__ == "__main__":
 	main()
+
