@@ -13,9 +13,9 @@ from keras.utils import np_utils
 
 def get_arg():
 	parser = argparse.ArgumentParser(description="")
-	parser.add_argument("--data", default="pkl/data.pkl.gz", help="data pkl path")
-	parser.add_argument("--embeddings", default="pkl/embeddings.pkl.gz", help="embeddings pkl path")
-	parser.add_argument("--predict", default="result/predict.txt", help="save predict path")
+	parser.add_argument("--data", "-d", default="pkl/data.pkl.gz", help="data pkl path")
+	parser.add_argument("--embeddings", "-e", default="pkl/embeddings.pkl.gz", help="embeddings pkl path")
+	parser.add_argument("--predict", "-p", default="result/predict.txt", help="save predict path")
 	parser.add_argument("--model", "-m", default="result/CNNmodel.h5", help="save model path")
 	parser.add_argument("--load", "-l", default=None, help="load model and do predict only")
 	args = parser.parse_args()
@@ -36,7 +36,7 @@ batch_size = 64
 nb_filter = 100
 kernel_size = 3
 hidden_dims = 100
-nb_epoch = 30
+nb_epoch = 25
 position_dims = 50
 
 args = get_arg()
@@ -102,7 +102,8 @@ else:
 
 	max_acc = 0      
 	model.fit([tokenIdTrain, positionTrain1, positionTrain2, POStagTrain], train_y_cat, 
-		batch_size=batch_size, verbose=True, epochs=nb_epoch, validation_split=0.05, callbacks=[checkpoint, earlystopping])   
+		batch_size=batch_size, verbose=True, epochs=nb_epoch) 
+		#batch_size=batch_size, verbose=True, epochs=nb_epoch, validation_split=0.05, callbacks=[checkpoint, earlystopping])   
 
 print ("Start predicting")
 pred_test = model.predict([tokenIdTest, positionTest1, positionTest2, POStagTest], verbose=False)

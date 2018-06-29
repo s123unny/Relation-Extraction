@@ -9,13 +9,13 @@ from nltk.corpus import treebank
 
 def get_arg():
 	parser = argparse.ArgumentParser(description="")
-	parser.add_argument("--test", default="../files/test.txt")
-	parser.add_argument("--train", default="../files/train.txt")
-	parser.add_argument("--output", default="pkl/data.pkl.gz")
-	parser.add_argument("--bin", action="store_true")
-	parser.add_argument("--embeddingsPkl", default="pkl/embeddings.pkl.gz")
-	parser.add_argument("--embeddings_bin", default="/tmp2/b05902005/GoogleNews-vectors-negative300.bin")
-	parser.add_argument("--embeddings", default="/tmp2/b05902090/deps.words")
+	parser.add_argument("--test", default="data/test.txt")
+	parser.add_argument("--train", default="data/train.txt")
+	parser.add_argument("--output", "-o", default="pkl/data.pkl.gz", help="data pkl output path")
+	parser.add_argument("--bin", action="store_true", help="define embeddings as word2vec bin file")
+	parser.add_argument("--embeddingsPkl", "-p", default="pkl/embeddings.pkl.gz", help="embeddings pkl output path")
+	parser.add_argument("--embeddings_bin", default="/tmp2/b05902005/GoogleNews-vectors-negative300.bin", help="bin type embeddings file ppath")
+	parser.add_argument("--embeddings", default="/tmp2/b05902090/deps.words", help="text type embeddings file path")
 	args = parser.parse_args()
 	return args
 
