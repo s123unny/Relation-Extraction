@@ -78,13 +78,13 @@ else:
 	words = Embedding(embeddings.shape[0], embeddings.shape[1], weights=[embeddings], trainable=False)(words_input)
 	#words = Dense(position_dims)(words)
 
-	output = concatenate([words, distance1, distance2, POStag])
+	output = concatenate([words, distance1, distance2])
 
 	output = Convolution1D(filters=nb_filter,
 	                        kernel_size=kernel_size,
 	                        strides=1,
 	                        padding="same",
-	                        activation='tanh')(output)
+	                        activation='relu')(output)
 	# we use standard max over time pooling
 	output = GlobalMaxPooling1D()(output)
 
@@ -95,18 +95,18 @@ else:
 	checkpoint = ModelCheckpoint(
 		filepath=args.model, verbose=1, save_best_only=True, monitor='val_loss', mode='auto')
 
-	model = Model(inputs=[words_input, distance1_input, distance2_input, POStag_input], outputs=[output])
+	model = Model(inputs=[words_input, distance1_input, distance2_input], outputs=[output])
 	model.compile(loss='categorical_crossentropy', optimizer='Adam', metrics=['accuracy'])
 	model.summary()
 	print ("Start training")
 
 	max_acc = 0      
-	model.fit([tokenIdTrain, positionTrain1, positionTrain2, POStagTrain], train_y_cat, 
+	model.fit([tokenIdTrain, positionTrain1, positionTrain2], train_y_cat, 
 		batch_size=batch_size, verbose=True, epochs=nb_epoch) 
 		#batch_size=batch_size, verbose=True, epochs=nb_epoch, validation_split=0.05, callbacks=[checkpoint, earlystopping])   
 
 print ("Start predicting")
-pred_test = model.predict([tokenIdTest, positionTest1, positionTest2, POStagTest], verbose=False)
+pred_test = model.predict([tokenIdTest, positionTest1, positionTest2], verbose=False)
 
 dctLabels = np.sum(pred_test)
 totalDCTLabels = np.sum(yTest)
@@ -121,6 +121,7 @@ outputfile = open(args.predict, "w")
 for i in range(len(class_test)):
 	outputfile.write("{}\t{}\n".format(i+8001, labelsMapping[class_test[i]]))
 
-# if args.load == None:
-# 	print ("Save model to", args.model)
-# 	model.save(args.model)
+
+if args.load == None:
+ 	print ("Save model to", args.model)
+ 	model.save(args.model)
